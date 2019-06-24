@@ -7,10 +7,11 @@ from email.mime.multipart import MIMEMultipart
 
 class MailSender:
 
-    def __init__(self, smtp_server, imap_server, login, password):
+    def __init__(self, smtp_server, imap_server, login, password, smtp_port=587):
         self._login = login
         self._password = password
         self._smtp_server = smtp_server
+        self._smtp_port = smtp_port
         self._imap_server = imap_server
 
     def send_message(self, subject, recipients, message):
@@ -19,7 +20,7 @@ class MailSender:
         msg['To'] = ', '.join(recipients)
         msg['Subject'] = subject
         msg.attach(MIMEText(message))
-        ms = smtplib.SMTP(self._smtp_server, 587)
+        ms = smtplib.SMTP(self._smtp_server, self._smtp_port)
         ms.ehlo()
         ms.starttls()
         ms.ehlo()
@@ -44,10 +45,10 @@ class MailSender:
         return email_message
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     c = MailSender(
         smtp_server='smtp.gmail.com', imap_server='imap.gmail.com',
         login='login@gmail.com', password='qwerty'
     )
     print(c.receive_messages())
-    c.send_message('test', ['test@mail.ru',], 'Hello! i am here!')
+    c.send_message('test', ['test@mail.ru', ], 'Hello! i am here!')
